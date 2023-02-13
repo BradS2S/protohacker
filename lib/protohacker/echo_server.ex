@@ -6,10 +6,12 @@ defmodule Protohacker.EchoServer do
     GenServer.start_link(__MODULE__, :no_state)
   end
 
-  defstruct [:listen_socket]
+  defstruct [:listen_socket, :supervisor]
 
 @impl true #implementation of GenServer callback
 def init(:no_state) do
+  #creates supervisor
+  {:ok, supervisor} = Task.Supervisor.start_link(max_children: 100)
   listen_options = [
     mode: :binary, # charlist by default
     active: false, # all actions on socket are explicit and blocking
@@ -20,7 +22,7 @@ def init(:no_state) do
     case :gen_tcp.listen(5000, listen_options) do
       {:ok, listen_socket} ->
         Logger.info("Starting echo server on port 5000.")
-        state = %__MODULE__{listen_socket: listen_socket}
+        state = %__MODULE__{listen_socket: listen_socket, supervisor: supervisor}
 
         #start accepting sockets async
         # :accept could be any term
@@ -36,7 +38,8 @@ def init(:no_state) do
     case :gen_tcp.accept(state.listen_socket) do
       # one-to-one socket
       {:ok, socket} ->
-        handle_connection(socket)
+        # spawns new child
+        Task.Supervisor.start_child(state.supervisor, fn -> handle_connection(socket) end)
         {:noreply, state, {:continue, :accept}}
       # accept fails
       {:error, reason} ->
