@@ -8,6 +8,7 @@ defmodule Protohacker.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      Protohacker.EchoServer
       # Starts a worker by calling: Protohacker.Worker.start_link(arg)
       # {Protohacker.Worker, arg}
     ]
