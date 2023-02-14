@@ -1,0 +1,35 @@
+# fly.toml file generated for ancient-rain-1562 on 2023-02-13T15:34:52-07:00
+
+app = "ancient-rain-1562"
+kill_signal = "SIGTERM"
+kill_timeout = 5
+processes = []
+
+[env]
+  LOG_LEVEL = "debug"
+  TCP_PORT = "5000"
+  UDP_PORT = "6000"
+
+[experimental]
+  allowed_public_ports = []
+  auto_rollback = true
+
+[[services]]
+  internal_port = 5000
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = []
+    port = 5000
+
+[[services]]
+  internal_port = 6000
+  protocol = "udp"
+  [services.concurrency]
+    hard_limit = 250
+    soft_limit = 200
+    type = "connections"
+
+  [[services.ports]]
+    handlers = []
+    port = 6000
