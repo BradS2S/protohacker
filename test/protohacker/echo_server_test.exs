@@ -2,7 +2,7 @@ defmodule Protohacker.EchoServerTest do
   use ExUnit.Case
 
   test "echoes anything back" do
-    {:ok, socket} = :gen_tcp.connect(~c"localhost", 5000, mode: :binary, active: false)
+    {:ok, socket} = :gen_tcp.connect(~c"localhost", 5001, mode: :binary, active: false)
     assert :gen_tcp.send(socket, "foo") == :ok
     assert :gen_tcp.send(socket, "bar") == :ok
     :gen_tcp.shutdown(socket, :write)
@@ -13,7 +13,7 @@ defmodule Protohacker.EchoServerTest do
     tasks =
       for _ <- 1..4 do
         Task.async(fn ->
-          {:ok, socket} = :gen_tcp.connect(~c"localhost", 5000, mode: :binary, active: false)
+          {:ok, socket} = :gen_tcp.connect(~c"localhost", 5001, mode: :binary, active: false)
 
         assert :gen_tcp.send(socket, "foo") == :ok
         assert :gen_tcp.send(socket, "bar") == :ok
